@@ -20,7 +20,6 @@ import com.lu.magic.util.ripple.RectangleRippleBuilder
 import com.lu.magic.util.ripple.RippleApplyUtil
 import com.lu.wxmask.adapter.AbsListAdapter
 import com.lu.wxmask.adapter.CommonListAdapter
-import com.lu.wxmask.bean.FakeItemBean
 import com.lu.wxmask.bean.FakeMessageItemBean
 import com.lu.wxmask.plugin.ui.IConfigManagerUI
 import com.lu.wxmask.plugin.ui.Theme
@@ -90,8 +89,7 @@ internal class FakeMessageManagerUI(private val context: Activity,private val fa
                 textSize = SizeUtil.sp2px(context.resources, 8f)
                 setTextColor(context.getColor(android.R.color.tab_indicator_text))
                 setOnClickListener {
-                // TODO 添加人员对话框  昵称、wxid
-                // showAddMaskItemDialog()
+                    showAddFakeMessageItemDialog()
                 }
                 RippleApplyUtil.apply(this, RectangleRippleBuilder(Color.TRANSPARENT, Theme.Color.bgRippleColor, 4))
                 val size = (textSize * 1.5).toInt()
@@ -100,21 +98,7 @@ internal class FakeMessageManagerUI(private val context: Activity,private val fa
                 }
                 this.gravity = Gravity.CENTER
             })
-            addView(TextView(context).apply {
-                text = "粘贴"
-                textSize = SizeUtil.sp2px(context.resources, 8f)
-                setTextColor(context.getColor(android.R.color.tab_indicator_text))
-                setOnClickListener {
-                    // TODO 粘贴复制的消息
-                    // showAddMaskItemDialog()
-                }
-                RippleApplyUtil.apply(this, RectangleRippleBuilder(Color.TRANSPARENT, Theme.Color.bgRippleColor, 4))
-                val size = (textSize * 1.5).toInt()
-                layoutParams = FrameLayout.LayoutParams(size, size).apply {
-                    gravity = Gravity.END
-                }
-                this.gravity = Gravity.CENTER
-            })
+
         }
     }
 
@@ -134,7 +118,7 @@ internal class FakeMessageManagerUI(private val context: Activity,private val fa
     }
 
     private fun initListAdapter() {
-        // TODO 加载人员列表
+        // TODO 加载消息列表
         listAdapter = object : CommonListAdapter<FakeMessageItemBean, AbsListAdapter.ViewHolder>() {
             init {
                 //去重
@@ -150,6 +134,7 @@ internal class FakeMessageManagerUI(private val context: Activity,private val fa
             }
 
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+                // TODO 消息列表View
                 val itemView = TextView(context).also {
                     it.layoutParams = MarginLayoutParams(
                         MarginLayoutParams.MATCH_PARENT,
@@ -162,11 +147,11 @@ internal class FakeMessageManagerUI(private val context: Activity,private val fa
                 return object : ViewHolder(itemView) {
                     init {
                         itemView.setOnLongClickListener {
-                            showDeleteFakeItemDialog(layoutPosition)
+                            showDeleteFakeMessageItemDialog(layoutPosition)
                             return@setOnLongClickListener false
                         }
                         itemView.setOnClickListener {
-                            showEditFakeItemDialog(layoutPosition)
+                            showEditFakeMessageItemDialog(layoutPosition)
                         }
                     }
                 }
@@ -175,14 +160,14 @@ internal class FakeMessageManagerUI(private val context: Activity,private val fa
             override fun onBindViewHolder(vh: ViewHolder, position: Int, parent: ViewGroup) {
                 val itemView = vh.itemView
                 val itemModel = dataList[position]
-
-                if (itemView is TextView) {
+                // TODO 消息列表VieHolder
+               /* if (itemView is TextView) {
                     itemView.text = if (itemModel.fakeName.isEmpty()) {
                         itemModel.fakeId
                     } else {
                         "${itemModel.fakeId} (${itemModel.fakeName})"
                     }
-                }
+                }*/
 
             }
 
@@ -190,7 +175,7 @@ internal class FakeMessageManagerUI(private val context: Activity,private val fa
 
     }
 
-    private fun showDeleteFakeItemDialog(position: Int) {
+    private fun showDeleteFakeMessageItemDialog(position: Int) {
         AlertDialog.Builder(context)
             .setTitle("是否删除？")
             .setNegativeButton("确定") { _, _ ->
@@ -204,7 +189,7 @@ internal class FakeMessageManagerUI(private val context: Activity,private val fa
             .show()
     }
 
-    private fun showAddFakeItemDialog() {
+    private fun showAddFakeMessageItemDialog() {
         AddFakeMessageItemUI(context, listAdapter.getData())
             .setConfirmListener { _, messageItemBean ->
                 listAdapter.addData(messageItemBean)
@@ -212,7 +197,7 @@ internal class FakeMessageManagerUI(private val context: Activity,private val fa
             }.show()
     }
 
-    private fun showEditFakeItemDialog(position: Int) {
+    private fun showEditFakeMessageItemDialog(position: Int) {
         EditFakeMessageItemUI(context, listAdapter.getData(), position)
             .setOnConfigChangeListener { _, _, mode ->
 //                when (mode) {

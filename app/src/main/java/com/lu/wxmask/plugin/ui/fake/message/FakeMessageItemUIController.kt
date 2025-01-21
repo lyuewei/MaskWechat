@@ -34,7 +34,7 @@ internal class FakeMessageItemUIController(private val context: Context, private
     }
     var tvFakeId: TextView = TextView(context).also {
         it.hint = "微信Id"
-        it.setText(message.fakeId)
+        it.text = message.fakeId
     }
    val spinnerFakeTypeList= arrayListOf(
         Constrant.WX_FAKE_TYPE_ADD to "添加",
@@ -69,15 +69,15 @@ internal class FakeMessageItemUIController(private val context: Context, private
     var tvMsgId = TextView(context).also {
         it.hint = "消息ID"
         if (Constrant.WX_FAKE_TYPE_ADD == message.fakeType){
-            it.setText(message.msgId)
+            it.text = message.msgId
         }else {
-            it.setText((System.currentTimeMillis()/1000).toString())
+            it.text = (System.currentTimeMillis()/1000).toString()
         }
 
     }
     var etMsgDate = EditText(context).also {
         it.hint = "日期"
-        //TODO 日期转换
+        //TODO 日期转换 选择
         it.setText(message.msgDate.toString())
     }
     var etFakeText = EditText(context).also {
@@ -86,7 +86,7 @@ internal class FakeMessageItemUIController(private val context: Context, private
     }
     var tvMsgText = TextView(context).also {
         it.hint = "原内容"
-        it.setText(message.msgText)
+        it.text = message.msgText
     }
     var cbSend = CheckBox(context).also {
         it.hint = "是否发送"

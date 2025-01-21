@@ -21,6 +21,7 @@ import com.lu.magic.util.ripple.RippleApplyUtil
 import com.lu.wxmask.adapter.AbsListAdapter
 import com.lu.wxmask.adapter.CommonListAdapter
 import com.lu.wxmask.bean.FakeItemBean
+import com.lu.wxmask.bean.WxMessageItemBean
 import com.lu.wxmask.plugin.ui.AddMaskItemUI
 import com.lu.wxmask.plugin.ui.EditMaskItemUI
 import com.lu.wxmask.plugin.ui.IConfigManagerUI
@@ -37,6 +38,7 @@ internal class FakeManagerUI(private val context: Activity) : IConfigManagerUI {
     private lateinit var listAdapter: CommonListAdapter<FakeItemBean, AbsListAdapter.ViewHolder>
     private val popwindow: BottomPopUI
     private lateinit var listView: ListView
+    public lateinit var copyMsgList :List<WxMessageItemBean>
 
     init {
         popwindow = BottomPopUI(onCreateView())
@@ -91,8 +93,7 @@ internal class FakeManagerUI(private val context: Activity) : IConfigManagerUI {
                 textSize = SizeUtil.sp2px(context.resources, 8f)
                 setTextColor(context.getColor(android.R.color.tab_indicator_text))
                 setOnClickListener {
-                // TODO 添加人员对话框  昵称、wxid
-                // showAddMaskItemDialog()
+                 showAddFakeItemDialog()
                 }
                 RippleApplyUtil.apply(this, RectangleRippleBuilder(Color.TRANSPARENT, Theme.Color.bgRippleColor, 4))
                 val size = (textSize * 1.5).toInt()
@@ -106,8 +107,7 @@ internal class FakeManagerUI(private val context: Activity) : IConfigManagerUI {
                 textSize = SizeUtil.sp2px(context.resources, 8f)
                 setTextColor(context.getColor(android.R.color.tab_indicator_text))
                 setOnClickListener {
-                    // TODO 粘贴复制的消息
-                    // showAddMaskItemDialog()
+                    readCopyMessage()
                 }
                 RippleApplyUtil.apply(this, RectangleRippleBuilder(Color.TRANSPARENT, Theme.Color.bgRippleColor, 4))
                 val size = (textSize * 1.5).toInt()
@@ -135,7 +135,6 @@ internal class FakeManagerUI(private val context: Activity) : IConfigManagerUI {
     }
 
     private fun initListAdapter() {
-        // TODO 加载人员列表
         listAdapter = object : CommonListAdapter<FakeItemBean, AbsListAdapter.ViewHolder>() {
             init {
                 //去重
@@ -207,8 +206,8 @@ internal class FakeManagerUI(private val context: Activity) : IConfigManagerUI {
 
     private fun showAddFakeItemDialog() {
         AddFakeItemUI(context, listAdapter.getData())
-            .setConfirmListener { _, maskItemBean ->
-                listAdapter.addData(maskItemBean)
+            .setConfirmListener { _, fakeItemBean ->
+                listAdapter.addData(fakeItemBean)
                 listAdapter.notifyDataSetChanged()
             }.show()
     }
@@ -223,6 +222,11 @@ internal class FakeManagerUI(private val context: Activity) : IConfigManagerUI {
                 listAdapter.notifyDataSetChanged()
             }
             .show()
+    }
+
+    private  fun readCopyMessage(){
+        // TODO 粘贴复制的消息
+       val wxMsgList= FakeUtil.getWxMsgList()
     }
 
 

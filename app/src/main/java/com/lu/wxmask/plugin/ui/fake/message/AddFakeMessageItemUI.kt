@@ -16,10 +16,7 @@ class AddFakeMessageItemUI(
     private var configListener: ((DialogInterface, FakeMessageItemBean) -> Unit)? = null
     private var onFreeButtonListener: DialogInterface.OnClickListener? = null
     private var fakeId = ""
-    private var msgId = ""
-    private var fakeText = ""
-    private var fakeType = ""
-    private var msgDate = ""
+
 
     //空闲的按钮的文字
     private var freeButtonText: CharSequence? = null
@@ -29,22 +26,6 @@ class AddFakeMessageItemUI(
         return this
     }
 
-    fun setMsgId(msgId: String?): AddFakeMessageItemUI {
-        this.msgId = msgId?:""
-        return this
-    }
-    fun setFakeText(fakeText: String?): AddFakeMessageItemUI {
-        this.fakeText = fakeText?:""
-        return this
-    }
-    fun setFakeType(fakeType: String?): AddFakeMessageItemUI {
-        this.fakeType = fakeType?:""
-        return this
-    }
-    fun setMsgDate(msgDate: String?): AddFakeMessageItemUI {
-        this.msgDate = msgDate?:""
-        return this
-    }
 
     fun setConfirmListener(listener: (DialogInterface, FakeMessageItemBean) -> Unit): AddFakeMessageItemUI {
         this.configListener = listener
@@ -80,7 +61,7 @@ class AddFakeMessageItemUI(
                     val fakeId = ui.tvFakeId.text.toElseEmptyString()
                     val msgDate = ui.etMsgDate.text.toElseEmptyString()
                     val fakeText = ui.etFakeText.text.toElseEmptyString()
-                    val isSend = ui.cbSend.isChecked()
+                    val isSend = ui.cbSend.isChecked
 
                     FakeMessageItemBean(fakeId).let {
                         it.isSend=isSend
