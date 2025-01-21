@@ -9,7 +9,8 @@ class OptionData private constructor(
     var enableMapConversation: Boolean,
     var hideSingleSearch: Boolean,
     var hideMainSearchStrong: Boolean,
-    var viewWxDbPw: Boolean
+    var viewWxDbPw: Boolean,
+    var enableCopyTextInfo: Boolean
 ) {
 
     companion object {
@@ -25,6 +26,7 @@ class OptionData private constructor(
                 hideSingleSearch = json.optBoolean("hideSingleSearch", true),
                 hideMainSearchStrong = json.optBoolean("hideMainSearchStrong", false),
                 viewWxDbPw = json.optBoolean("viewWxDbPw", false),
+                enableCopyTextInfo = json.optBoolean("enableCopyTextInfo",false)
             )
         }
         fun toJson(data: OptionData): String {
@@ -34,6 +36,7 @@ class OptionData private constructor(
                 put("hideSingleSearch", data.hideSingleSearch)
                 put("hideMainSearchStrong", data.hideMainSearchStrong)
                 put("viewWxDbPw", data.viewWxDbPw)
+                put("enableCopyTextInfo",data.enableCopyTextInfo)
             }.toString()
         }
 

@@ -289,6 +289,30 @@ class MaskManagerCenterUI @JvmOverloads constructor(
             })
 
             addView(Divider())
+            addView(FrameLayout(context).apply {
+                layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, ITEM_HEIGHT).apply {
+                    gravity = Gravity.CENTER_VERTICAL
+                    topMargin = 8.dp
+                }
+                addView(ItemSubTitle("开启复制文本信息"))
+                addView(Switch(context).apply {
+                    layoutParams = FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
+                        gravity = Gravity.CENTER_VERTICAL or Gravity.RIGHT
+                    }
+                    isChecked = mOptionData.enableCopyTextInfo
+                    setOnCheckedChangeListener { buttonView, isChecked ->
+                        mOptionData.enableCopyTextInfo = isChecked
+                    }
+                })
+            })
+            addView(
+                ItemLayoutArrowRight("消息管理").apply {
+                    setOnClickListener {
+                        ConfigManagerUI(getActivity()!!).show()
+                    }
+                })
+
+            addView(Divider())
             addView(ItemLayoutArrowRight("清空配置数据").apply {
                 setOnClickListener {
                     AlertDialog.Builder(context)
