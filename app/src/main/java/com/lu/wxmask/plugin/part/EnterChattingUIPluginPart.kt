@@ -165,7 +165,6 @@ class EnterChattingHookAction(
             if (chatUser != null && WXMaskPlugin.containChatUser(chatUser)) {
                 hideChatListUI(fragmentObj, activity, chatUser)
             }else if (mOptionData.enableFakeMsg && chatUser != null && WXMaskPlugin.containFakeChatUser(chatUser)){
-                // TODO fake消息
                 fakeMessage(fragmentObj,activity,chatUser)
             }else {
                 showChatListUI(fragmentObj)
@@ -178,6 +177,7 @@ class EnterChattingHookAction(
     /**fake 消息*/
     private fun fakeMessage(fragmentObj: Any,  activity: Activity,chatUser: String) {
         // TODO
+        val fakeMsgList = WXMaskPlugin.getFakeMsgListByFakeId(chatUser)
     }
 
     /**hook 文本消息*/

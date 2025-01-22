@@ -21,8 +21,10 @@ class WXMaskPlugin : IPlugin, ConfigSetObserver {
     val maskListMap: LinkedHashMap<String?, MaskItemBean> = LinkedHashMap()
     var fakeIdList = ArrayList<String?>()
     val fakeListMap: LinkedHashMap<String?, FakeItemBean> = LinkedHashMap()
+    val fakeIdMsgListMap: LinkedHashMap<String?, List<FakeMessageItemBean>> = LinkedHashMap()
     var fakeMsgIdList = ArrayList<String?>()
     val fakeMsgListMap: LinkedHashMap<String?, FakeMessageItemBean> = LinkedHashMap()
+
     val hideSearchListPluginPart = HideSearchListUIPluginPart()
     private val enterChattingUIPluginPart = EnterChattingUIPluginPart()
     private val hideMainUIListPluginPart = HideMainUIListPluginPart()
@@ -60,14 +62,17 @@ class WXMaskPlugin : IPlugin, ConfigSetObserver {
             return self.fakeMsgIdList.contains(msgId)
         }
 
-        fun getFakeBeamById(id: String): FakeItemBean? {
+        fun getFakeBeanByFakeId(fakeId: String): FakeItemBean? {
             val self = PluginProviders.from(WXMaskPlugin::class.java)
-            return self.fakeListMap[id]
+            return self.fakeListMap[fakeId]
         }
-
-        fun getFakeMsgBeamById(id: String): FakeMessageItemBean? {
+        fun getFakeMsgListByFakeId(fakeId: String): List<FakeMessageItemBean> {
             val self = PluginProviders.from(WXMaskPlugin::class.java)
-            return self.fakeMsgListMap[id]
+            return self.fakeIdMsgListMap[fakeId]?: emptyList()
+        }
+        fun getFakeMsgBeanByMsgId(msgId: String): FakeMessageItemBean? {
+            val self = PluginProviders.from(WXMaskPlugin::class.java)
+            return self.fakeMsgListMap[msgId]
         }
     }
 
@@ -87,6 +92,7 @@ class WXMaskPlugin : IPlugin, ConfigSetObserver {
             if (msgList.isNotEmpty()) {
                 fakeListMap[it.fakeId] = it
                 fakeIdList.add(it.fakeId)
+                fakeIdMsgListMap[it.fakeId]= msgList
                 msgList.forEach {it2->
                     fakeMsgListMap[it2.msgId] = it2
                     fakeMsgIdList.add(it2.msgId)
