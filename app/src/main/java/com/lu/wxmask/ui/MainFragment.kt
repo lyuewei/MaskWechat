@@ -1,6 +1,5 @@
 package com.lu.wxmask.ui
 
-import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -9,7 +8,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
 import com.lu.magic.ui.BaseFragment
 import com.lu.magic.ui.LifecycleAutoViewBinding
 import com.lu.magic.util.SizeUtil
@@ -42,7 +40,7 @@ class MainFragment : BaseFragment() {
     private val donateCardId = 10086
 
     private var mListAdapter: CommonListAdapter<Int, ItemBindingViewHolder>? = null
-    private lateinit var context:Context
+    private lateinit var context: Context
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return FragmentMainBinding.inflate(inflater, container, false).let {
             mainBinding = it

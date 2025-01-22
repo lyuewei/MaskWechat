@@ -64,7 +64,7 @@ class EditFakeMessageItemUI(
                     val fakeText = ui.etFakeText.text.toElseEmptyString()
                     val isSend = ui.cbSend.isChecked
                     val fakeType= ui.spinnerFakeTypeList[ui.spinnerFakeType.selectedItemPosition].first
-    val isOpen=ui.cbOpen.isChecked
+                     val isOpen=ui.cbOpen.isChecked
                     //编辑需要确保已变更，且不在列表中，而新增则不存在是否变更的问题
                     if (msgId.isNotEmpty() && msgId != fakeMsgItemBean.msgId && FakeMessageUtil.checkExitMsgId(lst, msgId)) {
                         ToastUtil.show("配置已存在！")

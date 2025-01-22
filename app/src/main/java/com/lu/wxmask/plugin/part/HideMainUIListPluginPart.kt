@@ -1,6 +1,8 @@
 package com.lu.wxmask.plugin.part
 
 import android.content.Context
+import android.graphics.Bitmap.Config
+import android.util.TimeUtils
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ListAdapter
@@ -21,6 +23,7 @@ import com.lu.wxmask.plugin.WXMaskPlugin
 import com.lu.wxmask.plugin.ui.MaskUtil
 import com.lu.wxmask.util.AppVersionUtil
 import com.lu.wxmask.util.ConfigUtil
+import com.lu.wxmask.util.ext.format2DateText
 import com.lu.wxmask.util.ext.getViewId
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import java.lang.reflect.Method
@@ -34,10 +37,13 @@ class HideMainUIListPluginPart : IPlugin {
         Constrant.WX_CODE_8_0_22 -> "aCW"
         in Constrant.WX_CODE_8_0_22..Constrant.WX_CODE_8_0_43 -> "k" // WX_CODE_PLAY_8_0_42 matches
         Constrant.WX_CODE_PLAY_8_0_48 -> "l"
-        Constrant.WX_CODE_8_0_49 -> "l"
+        Constrant.WX_CODE_8_0_49, Constrant.WX_CODE_8_0_51 -> "l"
         Constrant.WX_CODE_8_0_50 -> "n"
+        Constrant.WX_CODE_8_0_53 -> "m"
         else -> "m"
     }
+
+    private val mUserTravelTimeTemp: MutableMap<String, Long> = mutableMapOf()
 
     override fun handleHook(context: Context, lpparam: XC_LoadPackage.LoadPackageParam) {
         runCatching {
@@ -273,7 +279,8 @@ class HideMainUIListPluginPart : IPlugin {
             in Constrant.WX_CODE_8_0_40..Constrant.WX_CODE_8_0_43 -> "com.tencent.mm.ui.b0" // WX_CODE_PLAY_8_0_42 matches
             in Constrant.WX_CODE_8_0_43..Constrant.WX_CODE_8_0_44 -> "com.tencent.mm.ui.h3"
             in Constrant.WX_CODE_8_0_43..Constrant.WX_CODE_8_0_47,
-            Constrant.WX_CODE_PLAY_8_0_48 , Constrant.WX_CODE_8_0_50-> "com.tencent.mm.ui.i3"
+            Constrant.WX_CODE_PLAY_8_0_48, Constrant.WX_CODE_8_0_50, Constrant.WX_CODE_8_0_51, Constrant.WX_CODE_8_0_53 -> "com.tencent.mm.ui.i3"
+
             else -> null
         }
         var getItemMethod = if (adapterClazzName != null) {
@@ -329,14 +336,15 @@ class HideMainUIListPluginPart : IPlugin {
             object : XC_MethodHook2() {
                 override fun afterHookedMethod(param: MethodHookParam) {
                     val itemData: Any = param.result ?: return
-//                    LogUtil.v("item-data", GsonUtil.toJson(itemData))
                     val chatUser: String? = XposedHelpers2.getObjectField(itemData, "field_username")
                     if (chatUser == null) {
                         LogUtil.w("chat user is null")
                         return
                     }
                     if (WXMaskPlugin.containChatUser(chatUser)) {
-                        if (ConfigUtil.getOptionData().enableMapConversation) {
+//                        LogUtil.i("item-data", GsonUtil.toJson(itemData))
+                        val option = ConfigUtil.getOptionData()
+                        if (option.enableMapConversation) {
                             var maskBean = WXMaskPlugin.getMaskBeamById(chatUser)?.let {
                                 XposedHelpers2.setObjectField(itemData, "field_username", it.mapId)
                             }
@@ -347,9 +355,20 @@ class HideMainUIListPluginPart : IPlugin {
                         XposedHelpers2.setObjectField(itemData, "field_unReadCount", 0)
                         XposedHelpers2.setObjectField(itemData, "field_UnReadInvite", 0)
                         XposedHelpers2.setObjectField(itemData, "field_unReadMuteCount", 0)
-
-                        //文本消息
+                        //标注成文本消息，不显示表情等
                         XposedHelpers2.setObjectField(itemData, "field_msgType", "1")
+
+                        if (option.enableTravelTime && option.travelTime != 0L) {
+                            val cTime = XposedHelpers2.getObjectField<Any>(itemData, "field_conversationTime")
+                            if (cTime is Long) {
+                                if (mUserTravelTimeTemp[chatUser] != cTime) {//时间有变更，进行处理，没变更不用处理，避免列表多次加载导致时间不停后退
+                                    LogUtil.d("travel time change", chatUser, cTime.format2DateText(),"-->", mUserTravelTimeTemp[chatUser].format2DateText())
+                                    val nexTime = cTime - option.travelTime
+                                    XposedHelpers2.setObjectField(itemData, "field_conversationTime", nexTime)
+                                    mUserTravelTimeTemp[chatUser] = nexTime
+                                }
+                            }
+                        }
                         // 恢复被置底的好友
                         // try {
                         //     val cTime = XposedHelpers2.getObjectField<Any>(itemData, "field_conversationTime")

@@ -1,6 +1,9 @@
 package com.lu.wxmask.util
 
+import android.content.SharedPreferences
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.text.TextUtils
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.lu.magic.util.GsonUtil
 import com.lu.magic.util.kxt.toElseString
@@ -12,6 +15,7 @@ import com.lu.wxmask.bean.MaskItemBean
 import com.lu.wxmask.bean.OptionData
 import com.lu.wxmask.util.ext.toJson
 import org.json.JSONArray
+import org.json.JSONObject
 
 class ConfigUtil {
     companion object {

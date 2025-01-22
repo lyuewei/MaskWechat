@@ -178,6 +178,14 @@ SHA1: 6F2B100D9A14833E371651017E154147C21BC6B9
 8.0.50（2701）: [https://dldir1.qq.com/weixin/android/weixin8050android2701_0x2800323e_arm64.apk](https://dldir1.qq.com/weixin/android/weixin8050android2701_0x2800323e_arm64.apk)    
 SHA1: EC9A3352879B3B9793A9FA1A9FCCD31D48F88DB0
 
+8.0.51（2740）[https://dldir1.qq.com/weixin/android/weixin8053android2740_0x28003532_arm64.apk](https://dldir1.qq.com/weixin/android/weixin8053android2740_0x28003532_arm64.apk)  
+SHA1: E98D7BA57E14E927D1E37D04E0B099E9B5C4A73F  
+
+8.0.51（2720）[https://dldir1.qq.com/weixin/android/weixin8051android2720_0x28003333_arm64_1.apk](https://dldir1.qq.com/weixin/android/weixin8051android2720_0x28003333_arm64_1.apk)  
+SHA1: E98D7BA57E14E927D1E37D04E0B099E9B5C4A73F  
+
+8.0.53（2740）[https://dldir1.qq.com/weixin/android/weixin8053android2740_0x28003532_arm64.apk](https://dldir1.qq.com/weixin/android/weixin8053android2740_0x28003532_arm64.apk)  
+SHA1: 249366AE1497D1089709D8EC6DEE1401141719B4  
 
 推荐适配的最后两个版本，因为其他版本，作者自己不再使用
 

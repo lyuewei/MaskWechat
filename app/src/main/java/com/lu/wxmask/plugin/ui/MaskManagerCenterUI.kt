@@ -32,7 +32,9 @@ import com.lu.wxmask.plugin.ui.view.AttachUI
 import com.lu.wxmask.ui.adapter.SpinnerListAdapter
 import com.lu.wxmask.util.BarUtils
 import com.lu.wxmask.util.ConfigUtil
+import com.lu.wxmask.util.ext.dayText2Mills
 import com.lu.wxmask.util.ext.dp
+import com.lu.wxmask.util.ext.mills2Day
 import com.lu.wxmask.util.ext.setTextColorTheme
 import com.lu.wxmask.util.ext.toIntElse
 import com.lu.wxmask.util.ext.toJson
@@ -42,13 +44,13 @@ class MaskManagerCenterUI @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0, defStyleRes: Int = 0
 ) : AttachUI(context, attrs, defStyleAttr, defStyleRes) {
 
-    private val ITEM_HEIGHT: Int = 48.dp
+    private val ITEM_HEIGHT: Int = 40.dp
 
     private var mViewWxDbPwSwitch: Switch? = null
     var mQuickClickCountEdit: EditText? = null
     var mQuickClickDurationEdit: EditText? = null
     val mOptionData = ConfigUtil.getOptionData()
-
+    var mTravelTimeEditView: EditText? = null
 
     init {
         this.onShowListener = {
@@ -260,6 +262,32 @@ class MaskManagerCenterUI @JvmOverloads constructor(
                     isChecked = mOptionData.hideSingleSearch
                     setOnCheckedChangeListener { buttonView, isChecked ->
                         mOptionData.hideSingleSearch = isChecked
+                    }
+                })
+            })
+            addView(LinearLayout(context).apply {
+                layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                }
+                addView(ItemSubTitle("主页消息穿越过去/天："))
+                addView(ItemSubEdit(mOptionData.travelTime.mills2Day().toString()).apply {
+                    mTravelTimeEditView = this
+                    inputType = InputType.TYPE_CLASS_NUMBER
+                })
+                addView(Switch(context).apply {
+                    isChecked = mOptionData.enableTravelTime
+                    layoutParams = FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
+                        gravity = Gravity.CENTER_VERTICAL or Gravity.RIGHT
+                    }
+                    setOnCheckedChangeListener { buttonView, isChecked ->
+                        mOptionData.enableTravelTime = isChecked
+                        mOptionData.travelTime = mTravelTimeEditView.dayText2Mills(0L)
+                        if (!isChecked) {
+                            ToastUtil.show("已取消时间穿越")
+                        } else {
+                            ToastUtil.show("糊脸好友消息列表时间显示成过去 ${mTravelTimeEditView?.text} 天")
+                        }
+                        ConfigUtil.setOptionData(mOptionData)
                     }
                 })
             })

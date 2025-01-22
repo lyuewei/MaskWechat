@@ -12,7 +12,7 @@ import com.lu.lposed.plugin.IPlugin
 import com.lu.lposed.plugin.PluginProviders
 import com.lu.magic.util.GsonUtil
 import com.lu.magic.util.log.LogUtil
-
+import com.lu.wxmask.BuildConfig
 import com.lu.wxmask.ClazzN
 import com.lu.wxmask.Constrant
 import com.lu.wxmask.plugin.WXMaskPlugin
@@ -21,7 +21,6 @@ import com.lu.wxmask.util.ConfigUtil
 import com.lu.wxmask.util.FieldClassUtil
 import com.lu.wxmask.util.TextKit
 import com.lu.wxmask.util.dev.DebugUtil
-import com.tencent.wcdb.BuildConfig
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.callbacks.XC_LoadPackage

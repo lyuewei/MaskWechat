@@ -1,6 +1,7 @@
 package com.lu.wxmask.util.ext
 
 import android.graphics.Color
+import android.text.format.DateFormat
 import android.widget.TextView
 import com.google.gson.JsonObject
 import com.lu.magic.util.AppUtil
@@ -9,6 +10,8 @@ import com.lu.magic.util.GsonUtil
 import com.lu.magic.util.ResUtil
 import com.lu.magic.util.SizeUtil
 import com.lu.wxmask.util.ColorUtilX
+import kotlin.math.roundToLong
+import kotlin.time.times
 
 
 val sizeIntCache = HashMap<String, Int>()
@@ -53,6 +56,14 @@ fun CharSequence?.toIntElse(fallback: Int): Int = try {
 } catch (e: Exception) {
     fallback
 }
+fun CharSequence?.toLongElse(fallback: Long): Long = try {
+    if (this == null) {
+        fallback
+    }
+    this.toString().toLong()
+} catch (e: Exception) {
+    fallback
+}
 
 fun TextView.setTextColorTheme(color: Int) {
     if (ResUtil.isAppNightMode(this.context)) {
@@ -72,5 +83,44 @@ fun Class<*>?.createEmptyOrNullObject(): Any? {
         runCatching {
             return GsonUtil.fromJson("{}", this::class.java)
         }.getOrDefault(null)
+    }
+}
+
+
+fun Number.day2Mills(): Long {
+    if (this is Double) {
+        return (this.toDouble() * 24L * 60L * 60L * 1000L).toLong()
+    }
+    if (this is Float) {
+        return (this.toFloat() * 24L * 60L * 60L * 1000L).toLong()
+    }
+    return (this.toLong() * 24L * 60L * 60L * 1000L)
+}
+
+fun Long.mills2Day(): Int {
+    return ((this / 24L / 60L / 60L / 1000L).toInt())
+}
+
+/**
+ * 天数文本转毫秒数
+ */
+fun TextView?.dayText2Mills(fallback : Long=0): Long {
+    try {
+        return this?.text?.toString()?.toLongOrNull()?.day2Mills() ?: fallback
+    } catch (e: Exception) {
+    }
+    return fallback
+}
+
+fun Long?.format2DateText(pattern:String="yyyy-MM-dd HH:mm:ss"): CharSequence {
+    return try {
+        if (this == null) {
+            ""
+        } else {
+            DateFormat.format(pattern, this)
+//            java.text.SimpleDateFormat(pattern).format(this)
+        }
+    } catch (e: Exception) {
+        ""
     }
 }
