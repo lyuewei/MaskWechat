@@ -3,7 +3,6 @@ package com.lu.wxmask.plugin.ui.fake.message
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
-import androidx.core.view.get
 import com.lu.magic.util.ToastUtil
 import com.lu.magic.util.kxt.toElseEmptyString
 import com.lu.wxmask.Constrant
@@ -44,11 +43,11 @@ class EditFakeMessageItemUI(
     }
 
     fun show() {
-        val fakeItemBean = lst[position]
-        val ui = FakeMessageItemUIController(context, fakeItemBean)
+        val fakeMsgItemBean = lst[position]
+        val ui = FakeMessageItemUIController(context, fakeMsgItemBean)
 
         AlertDialog.Builder(context)
-            .setTitle("编辑消息")
+            .setTitle("编辑消息（${fakeMsgItemBean.msgId}）")
             .setIcon(context.applicationInfo.icon)
             .setView(ui.root)
             .setPositiveButton("确定", null)
@@ -64,11 +63,10 @@ class EditFakeMessageItemUI(
                     val msgDate = ui.msgDate
                     val fakeText = ui.etFakeText.text.toElseEmptyString()
                     val isSend = ui.cbSend.isChecked
-
-                    // TODO 类型选择
-                    val fakeType=ui.spinnerFakeType.get(0).getTag(0)
+                    val fakeType= ui.spinnerFakeTypeList[ui.spinnerFakeType.selectedItemPosition].first
+    val isOpen=ui.cbOpen.isChecked
                     //编辑需要确保已变更，且不在列表中，而新增则不存在是否变更的问题
-                    if (msgId.isNotEmpty() && msgId != fakeItemBean.msgId && FakeMessageUtil.checkExitMsgId(lst, msgId)) {
+                    if (msgId.isNotEmpty() && msgId != fakeMsgItemBean.msgId && FakeMessageUtil.checkExitMsgId(lst, msgId)) {
                         ToastUtil.show("配置已存在！")
                         return@setOnClickListener
                     }
@@ -77,20 +75,21 @@ class EditFakeMessageItemUI(
                         lst.removeAt(position)
                         ConfigUtil.setFakeMsgList(fakeId,lst)
                         ToastUtil.show("已删除！")
-                        onConfigChangeListener?.invoke(dialog, fakeItemBean, MODE_CONFIG_REMOVE)
+                        onConfigChangeListener?.invoke(dialog, fakeMsgItemBean, MODE_CONFIG_REMOVE)
                     } else {
                        // fakeItemBean.fakeId = fakeId
                       //  fakeItemBean.fakeName = fakeName
-                        if (fakeItemBean.fakeType==Constrant.WX_FAKE_TYPE_ADD){
-                            fakeItemBean.msgDate=msgDate.toLong()
-                            fakeItemBean.fakeText=fakeText
-                            fakeItemBean.isSend=isSend
+                        fakeMsgItemBean.isOpen = isOpen
+                        if (fakeMsgItemBean.fakeType==Constrant.WX_FAKE_TYPE_ADD){
+                            fakeMsgItemBean.msgDate=msgDate
+                            fakeMsgItemBean.fakeText=fakeText
+                            fakeMsgItemBean.isSend=isSend
                         }else if (fakeType==Constrant.WX_FAKE_TYPE_UPDATE){
-                            fakeItemBean.fakeText=fakeText
+                            fakeMsgItemBean.fakeText=fakeText
                         }
                         ConfigUtil.setFakeMsgList(fakeId,lst)
                         ToastUtil.show("已更新！")
-                        onConfigChangeListener?.invoke(dialog, fakeItemBean, MODE_CONFIG_UPDATE)
+                        onConfigChangeListener?.invoke(dialog, fakeMsgItemBean, MODE_CONFIG_UPDATE)
                     }
                     dialog.dismiss()
                 }

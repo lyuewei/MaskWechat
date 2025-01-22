@@ -44,7 +44,7 @@ class AddFakeMessageItemUI(
         val ui = FakeMessageItemUIController(context, FakeMessageItemBean(fakeItem.fakeId))
 
         AlertDialog.Builder(context)
-            .setTitle("添加消息("+fakeItem.fakeName+")")
+            .setTitle("添加消息（${fakeItem.fakeName.let { fakeItem.fakeId }}）")
             .setIcon(context.applicationInfo.icon)
             .setView(ui.root)
             .setNegativeButton("关闭", null)
@@ -65,7 +65,7 @@ class AddFakeMessageItemUI(
                         it.fakeText=fakeText
                         it.fakeType=Constrant.WX_FAKE_TYPE_ADD
                         it.msgId=(System.currentTimeMillis()/1000).toString()
-                        it.msgDate=msgDate.toLong()
+                        it.msgDate=msgDate
                         ConfigUtil.addFakeMsgList(fakeId,it)
                         configListener?.invoke(dialog, it)
                     }

@@ -150,6 +150,7 @@ class EnterChattingHookAction(
     val lpparam: XC_LoadPackage.LoadPackageParam,
     val tagConst: String
 ) {
+    val mOptionData = ConfigUtil.getOptionData()
     fun handle(param: XC_MethodHook.MethodHookParam) {
         val fragmentObj = param.thisObject
         LogUtil.w("enter chattingUI")
@@ -163,12 +164,25 @@ class EnterChattingHookAction(
             //命中配置的微信号
             if (chatUser != null && WXMaskPlugin.containChatUser(chatUser)) {
                 hideChatListUI(fragmentObj, activity, chatUser)
-            } else {
+            }else if (mOptionData.enableFakeMsg && chatUser != null && WXMaskPlugin.containFakeChatUser(chatUser)){
+                // TODO fake消息
+                fakeMessage(fragmentObj,activity,chatUser)
+            }else {
                 showChatListUI(fragmentObj)
             }
         } else {
             LogUtil.w("chattingUI's arguments is null")
         }
+    }
+
+    /**fake 消息*/
+    private fun fakeMessage(fragmentObj: Any,  activity: Activity,chatUser: String) {
+        // TODO
+    }
+
+    /**hook 文本消息*/
+    private fun hookTextMsg(fragmentObj: Any) {
+        // TODO
     }
 
     private fun findChatListView(fragmentObj: Any): View? {

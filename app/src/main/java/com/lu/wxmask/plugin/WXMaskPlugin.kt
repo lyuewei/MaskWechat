@@ -4,6 +4,8 @@ import android.content.Context
 import com.lu.lposed.plugin.IPlugin
 import com.lu.lposed.plugin.PluginProviders
 import com.lu.magic.util.log.LogUtil
+import com.lu.wxmask.bean.FakeItemBean
+import com.lu.wxmask.bean.FakeMessageItemBean
 import com.lu.wxmask.bean.MaskItemBean
 import com.lu.wxmask.plugin.part.EmptySingChatHistoryGalleryPluginPart
 import com.lu.wxmask.plugin.part.EnterChattingUIPluginPart
@@ -17,7 +19,10 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 class WXMaskPlugin : IPlugin, ConfigSetObserver {
     var maskIdList = ArrayList<String?>()
     val maskListMap: LinkedHashMap<String?, MaskItemBean> = LinkedHashMap()
-
+    var fakeIdList = ArrayList<String?>()
+    val fakeListMap: LinkedHashMap<String?, FakeItemBean> = LinkedHashMap()
+    var fakeMsgIdList = ArrayList<String?>()
+    val fakeMsgListMap: LinkedHashMap<String?, FakeMessageItemBean> = LinkedHashMap()
     val hideSearchListPluginPart = HideSearchListUIPluginPart()
     private val enterChattingUIPluginPart = EnterChattingUIPluginPart()
     private val hideMainUIListPluginPart = HideMainUIListPluginPart()
@@ -38,6 +43,32 @@ class WXMaskPlugin : IPlugin, ConfigSetObserver {
             val self = PluginProviders.from(WXMaskPlugin::class.java)
             return self.maskListMap[id]
         }
+        fun containFakeChatUser(chatUser: String?): Boolean {
+            val self = PluginProviders.from(WXMaskPlugin::class.java)
+            if (chatUser.isNullOrBlank()) {
+                LogUtil.w("chatUser is null or blank")
+                return false
+            }
+            return self.fakeIdList.contains(chatUser)
+        }
+        fun containFakeMsg(msgId: String?): Boolean {
+            val self = PluginProviders.from(WXMaskPlugin::class.java)
+            if (msgId.isNullOrBlank()) {
+                LogUtil.w("chatUser is null or blank")
+                return false
+            }
+            return self.fakeMsgIdList.contains(msgId)
+        }
+
+        fun getFakeBeamById(id: String): FakeItemBean? {
+            val self = PluginProviders.from(WXMaskPlugin::class.java)
+            return self.fakeListMap[id]
+        }
+
+        fun getFakeMsgBeamById(id: String): FakeMessageItemBean? {
+            val self = PluginProviders.from(WXMaskPlugin::class.java)
+            return self.fakeMsgListMap[id]
+        }
     }
 
     private fun loadConfigData() {
@@ -46,6 +77,21 @@ class WXMaskPlugin : IPlugin, ConfigSetObserver {
         ConfigUtil.getMaskList().forEach {
             maskListMap[it.maskId] = it
             maskIdList.add(it.maskId)
+        }
+        fakeIdList.clear()
+        fakeListMap.clear()
+        fakeMsgIdList.clear()
+        fakeMsgListMap.clear()
+        ConfigUtil.getFakeList().forEach { it ->
+          val msgList=  ConfigUtil.getFakeMsgList(it.fakeId).filter { it.isOpen }
+            if (msgList.isNotEmpty()) {
+                fakeListMap[it.fakeId] = it
+                fakeIdList.add(it.fakeId)
+                msgList.forEach {it2->
+                    fakeMsgListMap[it2.msgId] = it2
+                    fakeMsgIdList.add(it2.msgId)
+                }
+            }
         }
     }
 

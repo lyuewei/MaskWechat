@@ -306,6 +306,23 @@ class MaskManagerCenterUI @JvmOverloads constructor(
                     }
                 })
             })
+
+            addView(FrameLayout(context).apply {
+                layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, ITEM_HEIGHT).apply {
+                    gravity = Gravity.CENTER_VERTICAL
+                    topMargin = 8.dp
+                }
+                addView(ItemSubTitle("Fake消息开关"))
+                addView(Switch(context).apply {
+                    layoutParams = FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
+                        gravity = Gravity.CENTER_VERTICAL or Gravity.RIGHT
+                    }
+                    isChecked = mOptionData.enableCopyTextInfo
+                    setOnCheckedChangeListener { buttonView, isChecked ->
+                        mOptionData.enableFakeMsg = isChecked
+                    }
+                })
+            })
             addView(
                 ItemLayoutArrowRight("消息管理").apply {
                     setOnClickListener {

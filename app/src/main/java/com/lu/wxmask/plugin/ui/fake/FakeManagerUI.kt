@@ -14,6 +14,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.allViews
 import androidx.core.view.setPadding
 import com.lu.magic.util.SizeUtil
@@ -68,7 +69,9 @@ internal class FakeManagerUI(private val context: Activity) : IConfigManagerUI {
             // isForceDarkAllowed = true
             background = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
-                setColor(Theme.Color.bgPrimary(context))
+                val originalColor = Theme.Color.bgPrimary(context)
+                val fadedColor = ColorUtils.blendARGB(originalColor, Color.WHITE, 0.1f) // 0.5f 是混合比例，可以根据需要调整
+                setColor(fadedColor)
                 cornerRadii = floatArrayOf(16f.dp, 16f.dp, 16f.dp, 16f.dp, 0f, 0f, 0f, 0f)
             }
 
@@ -190,7 +193,7 @@ internal class FakeManagerUI(private val context: Activity) : IConfigManagerUI {
                     init {
                         itemView.getChildAt(0).setOnLongClickListener {
                            FakeMessageManagerUI(context,dataList[layoutPosition]).show()
-                            return@setOnLongClickListener false
+                            return@setOnLongClickListener true
                         }
                         itemView.getChildAt(0).setOnClickListener {
                             showEditFakeItemDialog(layoutPosition)

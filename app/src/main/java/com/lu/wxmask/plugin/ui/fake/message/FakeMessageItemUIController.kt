@@ -46,7 +46,7 @@ internal class FakeMessageItemUIController(private val context: Context, private
         }
         setPadding(dp24)
     }
-    var msgDate :Long =0
+    var msgDate :Long =message.msgDate ?: 0
     var tvFakeId: TextView = TextView(context).also {
         it.hint = "微信Id"
         it.text = message.fakeId
@@ -92,19 +92,38 @@ internal class FakeMessageItemUIController(private val context: Context, private
 
     var tvMsgDate = TextView(context).also {
         it.hint = "日期"
-        //TODO 日期转换 选择
         it.setOnClickListener { showDateTimePicker(it as TextView) }
         it.text =formatTimestamp(msgDate)
     }
     var etFakeText = EditText(context).also {
         it.hint = "伪造内容"
         it.setText(message.fakeText)
+        if (Constrant.WX_FAKE_TYPE_HIDE == message.fakeType){
+            it.visibility = View.GONE
+        }else {
+            it.visibility = View.VISIBLE
+        }
     }
     var tvMsgText = TextView(context).also {
         it.hint = "原内容"
         it.text = message.msgText
+        if (Constrant.WX_FAKE_TYPE_ADD == message.fakeType){
+            it.visibility = View.GONE
+        }else {
+            it.visibility = View.VISIBLE
+        }
     }
     var cbSend = CheckBox(context).also {
+        //it.hint = "是否发送"
+        it.isChecked = message.isSend
+        if (Constrant.WX_FAKE_TYPE_ADD == message.fakeType){
+            it.isEnabled=true
+        }else{
+            it.isEnabled=false
+        }
+    }
+
+    var cbOpen = CheckBox(context).also {
         //it.hint = "是否发送"
         it.isChecked = message.isSend
     }
@@ -131,6 +150,7 @@ internal class FakeMessageItemUIController(private val context: Context, private
         if (Constrant.WX_FAKE_TYPE_ADD== message.fakeType) {
             addView(cbSend,"是否发送")
         }
+        addView(cbOpen,"是否应用")
 
 
     }
@@ -199,7 +219,8 @@ internal class FakeMessageItemUIController(private val context: Context, private
     }
 
 
-    fun formatTimestamp(timestamp: Long): String {
+    @SuppressLint("SimpleDateFormat")
+    private fun formatTimestamp(timestamp: Long): String {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
         dateFormat.timeZone = TimeZone.getDefault()
         return dateFormat.format(Date(timestamp))

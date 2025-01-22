@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.Space
 import android.widget.TextView
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.setPadding
 import com.lu.magic.util.CursorUtil
 import com.lu.magic.util.ToastUtil
@@ -47,7 +48,9 @@ class DBInfoListUI(val context: Context) : IConfigManagerUI {
             // isForceDarkAllowed = true
             background = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
-                setColor(Theme.Color.bgPrimary(context))
+                val originalColor = Theme.Color.bgPrimary(context)
+                val fadedColor = ColorUtils.blendARGB(originalColor, Color.WHITE, 0.1f) // 0.5f 是混合比例，可以根据需要调整
+                setColor(fadedColor)
                 cornerRadii = floatArrayOf(16f.dp, 16f.dp, 16f.dp, 16f.dp, 0f, 0f, 0f, 0f)
             }
             addView(initTopLayout())

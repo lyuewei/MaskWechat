@@ -1,5 +1,6 @@
 package com.lu.wxmask.plugin.ui.fake.message
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.graphics.Color
@@ -14,10 +15,12 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.setPadding
 import com.lu.magic.util.SizeUtil
 import com.lu.magic.util.ripple.RectangleRippleBuilder
 import com.lu.magic.util.ripple.RippleApplyUtil
+import com.lu.wxmask.Constrant
 import com.lu.wxmask.adapter.AbsListAdapter
 import com.lu.wxmask.adapter.CommonListAdapter
 import com.lu.wxmask.bean.FakeItemBean
@@ -27,8 +30,9 @@ import com.lu.wxmask.plugin.ui.Theme
 import com.lu.wxmask.plugin.ui.view.BottomPopUI
 import com.lu.wxmask.util.ConfigUtil
 import com.lu.wxmask.util.ext.dp
-
-
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.TimeZone
 
 
 // PopWindow全屏+返回键监听弹窗，暂不需要，没有那么多配置
@@ -61,7 +65,9 @@ internal class FakeMessageManagerUI(private val context: Activity,private val fa
             // isForceDarkAllowed = true
             background = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
-                setColor(Theme.Color.bgPrimary(context))
+                val originalColor = Theme.Color.bgPrimary(context)
+                val fadedColor = ColorUtils.blendARGB(originalColor, Color.WHITE, 0.2f) // 0.5f 是混合比例，可以根据需要调整
+                setColor(fadedColor)
                 cornerRadii = floatArrayOf(16f.dp, 16f.dp, 16f.dp, 16f.dp, 0f, 0f, 0f, 0f)
             }
 
@@ -70,6 +76,7 @@ internal class FakeMessageManagerUI(private val context: Activity,private val fa
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun initTopLayout(): FrameLayout {
 
         return FrameLayout(context).apply {
@@ -83,7 +90,7 @@ internal class FakeMessageManagerUI(private val context: Activity,private val fa
                 }
                 setTextColor(context.getColor(android.R.color.tab_indicator_text))
                 textSize = 16f
-                text = "消息管理"
+                text = "消息管理（${fakeItem.fakeName?.let { fakeItem.fakeId }}）"
             })
             addView(TextView(context).apply {
                 text = "+"
@@ -126,7 +133,7 @@ internal class FakeMessageManagerUI(private val context: Activity,private val fa
                     val keyMap = LinkedHashMap<String, FakeMessageItemBean>()
                     //去重
                     it.forEach { bean ->
-                        keyMap[bean.fakeId] = bean
+                        keyMap[bean.msgId] = bean
                     }
                     keyMap.values.toList()
                 }
@@ -134,16 +141,50 @@ internal class FakeMessageManagerUI(private val context: Activity,private val fa
             }
 
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-                // TODO 消息列表View
-                val itemView = TextView(context).also {
+
+                val itemView = LinearLayout(context).also {
                     it.layoutParams = MarginLayoutParams(
                         MarginLayoutParams.MATCH_PARENT,
                         MarginLayoutParams.WRAP_CONTENT
                     )
-
+                    it.orientation = LinearLayout.VERTICAL
                     it.setPadding(6.dp)
                     RippleApplyUtil.apply(it, RectangleRippleBuilder(Color.TRANSPARENT, Theme.Color.bgRippleColor))
+               }
+
+                val tvFakeText= TextView(context).also {
+                    it.layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                    it.setPadding(1.dp)
+                 }
+                val tvMsgText= TextView(context).also {
+                    it.layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                    it.setPadding(1.dp)
                 }
+                val tvDateText= TextView(context).also {
+                    it.layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                    it.setPadding(1.dp)
+                }
+                val tvOtherText= TextView(context).also {
+                    it.layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                    it.setPadding(1.dp)
+                }
+
+    itemView.addView(tvFakeText)
+                itemView.addView(tvMsgText)
+                itemView.addView(tvDateText)
+                itemView.addView(tvOtherText)
 
                 return object : ViewHolder(itemView) {
                     init {
@@ -159,18 +200,22 @@ internal class FakeMessageManagerUI(private val context: Activity,private val fa
                 }
             }
 
+            @SuppressLint("SetTextI18n")
             override fun onBindViewHolder(vh: ViewHolder, position: Int, parent: ViewGroup) {
-                val itemView = vh.itemView
+                val itemView = vh.itemView as LinearLayout
                 val itemModel = dataList[position]
                 // TODO 消息列表VieHolder
-               /* if (itemView is TextView) {
-                    itemView.text = if (itemModel.fakeName.isEmpty()) {
-                        itemModel.fakeId
-                    } else {
-                        "${itemModel.fakeId} (${itemModel.fakeName})"
-                    }
-                }*/
-
+                val tvFakeText = itemView.getChildAt(0) as TextView
+                tvFakeText.text="新内容：${itemModel.fakeText}"
+                val tvMsgText = itemView.getChildAt(1) as TextView
+                tvMsgText.text="原内容：${itemModel.msgText}"
+                if (itemModel.fakeType!=Constrant.WX_FAKE_TYPE_UPDATE){
+                    tvMsgText.visibility=View.GONE
+                }
+                val tvDateText = itemView.getChildAt(2) as TextView
+                tvDateText.text="时间：${itemModel.msgDate?.let { formatTimestamp(it) }}"
+                val tvOtherText = itemView.getChildAt(3) as TextView
+                tvOtherText.text="类型：${itemModel.fakeType?.let { fakeTypeStr(it) }}  接收：${itemModel.isSend}  ID：${itemModel.msgId}"
             }
 
         }
@@ -210,6 +255,25 @@ internal class FakeMessageManagerUI(private val context: Activity,private val fa
             }
             .show()
     }
+    fun formatTimestamp(timestamp: Long): String {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
+        dateFormat.timeZone = TimeZone.getDefault()
+        return dateFormat.format(Date(timestamp))
+    }
 
+    fun fakeTypeStr(type:Int):String{
+        when(type){
+            Constrant.WX_FAKE_TYPE_ADD->{
+                return "添加"
+            }
+            Constrant.WX_FAKE_TYPE_UPDATE->{
+                return "修改"
+            }
+            Constrant.WX_FAKE_TYPE_HIDE->{
+                return "隐藏"
+            }
+        }
+        return "未知"
+    }
 
 }
