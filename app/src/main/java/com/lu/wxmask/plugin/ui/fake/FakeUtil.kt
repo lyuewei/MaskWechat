@@ -8,7 +8,7 @@ class FakeUtil {
 
     companion object {
         @JvmField
-         var wxMsgList :List<WxMessageItemBean> = TODO()
+         var wxMsgList :MutableList<WxMessageItemBean> =  mutableListOf()
 
         @JvmStatic
         fun checkExitFakeId(lst: List<FakeItemBean>, fakeId: String): Boolean {
@@ -32,9 +32,10 @@ class FakeUtil {
 
         @JvmStatic
         fun  cleanWxMsgList(){
-            // TODO 清空
+            wxMsgList.clear()
         }
     }
 
 
 }
+

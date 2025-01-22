@@ -5,26 +5,23 @@ import android.content.Context
 import android.content.DialogInterface
 import com.lu.magic.util.kxt.toElseEmptyString
 import com.lu.wxmask.Constrant
+import com.lu.wxmask.bean.FakeItemBean
 import com.lu.wxmask.bean.FakeMessageItemBean
 import com.lu.wxmask.util.ConfigUtil
 
 class AddFakeMessageItemUI(
     private val context: Context,
-    private val lst: List<FakeMessageItemBean>,
+   // private val lst: List<FakeMessageItemBean>,
+    private val fakeItem:FakeItemBean
 ) {
     private var onDismissListener: DialogInterface.OnDismissListener? = null
     private var configListener: ((DialogInterface, FakeMessageItemBean) -> Unit)? = null
     private var onFreeButtonListener: DialogInterface.OnClickListener? = null
-    private var fakeId = ""
 
 
     //空闲的按钮的文字
     private var freeButtonText: CharSequence? = null
 
-    fun setFakeId(fakeId: String?): AddFakeMessageItemUI {
-        this.fakeId = fakeId?:""
-        return this
-    }
 
 
     fun setConfirmListener(listener: (DialogInterface, FakeMessageItemBean) -> Unit): AddFakeMessageItemUI {
@@ -44,10 +41,10 @@ class AddFakeMessageItemUI(
     }
 
     fun show() {
-        val ui = FakeMessageItemUIController(context, FakeMessageItemBean(fakeId))
+        val ui = FakeMessageItemUIController(context, FakeMessageItemBean(fakeItem.fakeId))
 
         AlertDialog.Builder(context)
-            .setTitle("添加消息")
+            .setTitle("添加消息("+fakeItem.fakeName+")")
             .setIcon(context.applicationInfo.icon)
             .setView(ui.root)
             .setNegativeButton("关闭", null)
@@ -59,7 +56,7 @@ class AddFakeMessageItemUI(
                 //重写确定按钮监听，不消失对话框
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                     val fakeId = ui.tvFakeId.text.toElseEmptyString()
-                    val msgDate = ui.etMsgDate.text.toElseEmptyString()
+                    val msgDate = ui.msgDate
                     val fakeText = ui.etFakeText.text.toElseEmptyString()
                     val isSend = ui.cbSend.isChecked
 

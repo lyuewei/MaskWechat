@@ -27,6 +27,7 @@ import com.lu.magic.util.ripple.RectangleRippleBuilder
 import com.lu.magic.util.ripple.RippleApplyUtil
 import com.lu.wxmask.Constrant
 import com.lu.wxmask.bean.QuickTemporaryBean
+import com.lu.wxmask.plugin.ui.fake.FakeManagerUI
 import com.lu.wxmask.plugin.ui.view.AttachUI
 import com.lu.wxmask.ui.adapter.SpinnerListAdapter
 import com.lu.wxmask.util.BarUtils
@@ -308,7 +309,7 @@ class MaskManagerCenterUI @JvmOverloads constructor(
             addView(
                 ItemLayoutArrowRight("消息管理").apply {
                     setOnClickListener {
-                        ConfigManagerUI(getActivity()!!).show()
+                        FakeManagerUI(getActivity()!!).show()
                     }
                 })
 

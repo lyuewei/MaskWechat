@@ -61,17 +61,18 @@ class EditFakeMessageItemUI(
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                     val fakeId = ui.tvFakeId.text.toElseEmptyString()
                     val msgId=ui.tvMsgId.text.toElseEmptyString()
-                    val msgDate = ui.etMsgDate.text.toElseEmptyString()
+                    val msgDate = ui.msgDate
                     val fakeText = ui.etFakeText.text.toElseEmptyString()
                     val isSend = ui.cbSend.isChecked
+
                     // TODO 类型选择
                     val fakeType=ui.spinnerFakeType.get(0).getTag(0)
                     //编辑需要确保已变更，且不在列表中，而新增则不存在是否变更的问题
-                    if (msgId.isNotEmpty() && msgId != fakeItemBean.msgId && FakeMessageUtil.checkExitFakeId(lst, msgId)) {
+                    if (msgId.isNotEmpty() && msgId != fakeItemBean.msgId && FakeMessageUtil.checkExitMsgId(lst, msgId)) {
                         ToastUtil.show("配置已存在！")
                         return@setOnClickListener
                     }
-                    if (fakeId.isEmpty()) {
+                    if (msgId.isEmpty()) {
                         //删除
                         lst.removeAt(position)
                         ConfigUtil.setFakeMsgList(fakeId,lst)

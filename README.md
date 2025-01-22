@@ -1,6 +1,9 @@
 # 计划新增功能 by lyuewei
-修改文本聊天记录
-添加文本聊天记录
+1.修改文本聊天记录
+2.隐藏文本聊天记录
+3.添加文本聊天记录
+
+
 # MaskWechat
 
 [Source link / 项目地址](https://github.com/Mingyueyixi/MaskWechat)
@@ -36,7 +39,7 @@ v1.6版本：
 v1.8版本：  
 实现了自定义点击次数与时间间隔
 
-**PS.   PS。**     * * PS。PS。**
+**PS.**  
 150毫秒/次，意味着一秒内需要点击6次（普通人极限手速），才能解开，如果你无法解开，不用怀疑，就是手速太慢了，去修改时间间隔吧
 
 ### 搜索列表隐藏特定用户所在行（Since V1.7）
@@ -50,7 +53,7 @@ v2.2版本变更：开启sql hook，通过拦截并修改sql实现搜索功能�
 通过`配置管理`清除即可
 
 
-**PS.**   PS。* * * *   * * PS。** ps。* * * *
+**PS.**
 - 模块仅仅是隐藏了视图，不对用户数据进行修改
 - 模块目前仅隐藏聊天记录，防止被偷窥，而不会”伪装“或修改好友/群组信息，此类功能暂时不会添加
 - 模块正常只隐藏主页相关消息，不包括通知栏等渠道的消息，有较强隐私需求用户，建议关闭微信的`通知显示消息详情`
@@ -62,7 +65,7 @@ v1.13版本开始，默认隐藏App在桌面的图标。隐藏以后，打开模
 1. 从 lsp 模块管理器打开App
 2. 从网页链接（deeplink）打开App
 
-**PS.**   PS。* * * *   * * PS。** ps。* * * *
+**PS.**
 - App主页跳转链接：[maskwechat://com.lu.wxmask](maskwechat://com.lu.wxmask)
 - 小米系统可通过系统的”扫一扫“扫描上述链接对应的二维马直接打开（请自行去生成一个吧），其他app如浏览器需可点击短链打开：[https://sourl.cn/sPfEeY](https://sourl.cn/sPfEeY)，可以保存为书签
 - 微信/QQ不支持通过此类链接跳转
@@ -70,10 +73,10 @@ v1.13版本开始，默认隐藏App在桌面的图标。隐藏以后，打开模
 
 ## 适配版本
 
-play store版本：  
+play store版本：
 
 8.0.42 2429  
-8.0.48 2589 
+8.0.48 2589
 
 感谢 @mislock 大胸弟。
 
@@ -98,7 +101,7 @@ play store版本：
 8.0.49 (2600) 2024-04-22
 8.0.50 (2701) 2024-07-02
 
-**PS.**   PS。* * * *   * * PS。** ps。* * * *
+**PS.**
 - 仅支持上述版本，所有其他版本号以及32位版本未经测试，预计百分之九十九不可用
 - 模块一般只测试通过了最后一个适配的微信版本，因为作者精力有限+穷没有多余手机测试
 - 微信更新记录官网： https://weixin.qq.com/cgi-bin/readtemplate?lang=zh_CN&t=weixin_faq_list&head=true
@@ -128,13 +131,13 @@ play store版本：
 SHA1: 2FAB9BF8E160F38494FE7D6D4D7A56DF63B6EB58
 
 8.0.32（2300）：[https://dldir1.qq.com/weixin/android/weixin8032android2300_arm64_3.apk](https://dldir1.qq.com/weixin/android/weixin8032android2300_arm64_3.apk)  
-SHA1: 45A408C5222C1A03D3B7C84F06DA97AD2F5B4ADCSHA1: 45 a408c5222c1a03d3b7c84f06da97ad2f5b4adc
+SHA1: 45A408C5222C1A03D3B7C84F06DA97AD2F5B4ADC
 
 8.0.33（2320）：[https://dldir1.qq.com/weixin/android/weixin8033android2320_arm64.apk](https://dldir1.qq.com/weixin/android/weixin8033android2320_arm64.apk)  
-SHA1: 8069F4730CF8839BE68609EF2F4702349E23A86BSHA1: 8069 f4730cf8839be68609ef2f4702349e23a86b
+SHA1: 8069F4730CF8839BE68609EF2F4702349E23A86B
 
 8.0.34（2340）: [https://dldir1.qq.com/weixin/android/weixin8034android2340_arm64_1.apk](https://dldir1.qq.com/weixin/android/weixin8034android2340_arm64_1.apk)  
-SHA1: 30D0D0C25561D367A9E359A1804EA90352BEA7F5SHA1: 30 d0d0c25561d367a9e359a1804ea90352bea7f5
+SHA1: 30D0D0C25561D367A9E359A1804EA90352BEA7F5
 
 8.0.35 (2360): [https://dldir1.qq.com/weixin/android/weixin8035android2360_arm64_3.apk](https://dldir1.qq.com/weixin/android/weixin8035android2360_arm64_3.apk)  
 SHA1: 5593FB24667D44ABD2299EF1118CD3498099B719
@@ -152,7 +155,7 @@ SHA1: BCCA3CCACE5F40184A42FEFB06190C7279024985
 SHA1: 51D3E1C9594723FE8A69B68780C4B561964C7718
 
 8.0.42（2460）：[https://dldir1.qq.com/weixin/android/weixin8042android2460_arm64.apk](https://dldir1.qq.com/weixin/android/weixin8042android2460_arm64.apk)    
-SHA1: 227E395C67A2C0B0BCC750E1A3C52F642B433441SHA1: 227 e395c67a2c0b0bcc750e1a3c52f642b433441
+SHA1: 227E395C67A2C0B0BCC750E1A3C52F642B433441
 
 8.0.43（2480）：[https://dldir1.qq.com/weixin/android/weixin8043android2480_0x28002b35_arm64.apk](https://dldir1.qq.com/weixin/android/weixin8043android2480_0x28002b35_arm64.apk)    
 SHA1: C46C85AF05130EDABCDBA8D487A5373ECE4AE6D0
@@ -167,7 +170,7 @@ SHA1: F44F35663E2A2C3BF9EA671270D65902AB5727DA
 SHA1: 173D8632093949D7AB1DA6D8B8CB5C1252876BEB
 
 8.0.47（2560）: [https://dldir1.qq.com/weixin/android/weixin8047android2560_0x28002f36_arm64.apk](https://dldir1.qq.com/weixin/android/weixin8047android2560_0x28002f36_arm64.apk)    
-SHA1: 79F1341563A9CCCAF3090D27A5E9D529008EEC42SHA1: 79 f1341563a9cccaf3090d27a5e9d529008eec42
+SHA1: 79F1341563A9CCCAF3090D27A5E9D529008EEC42
 
 8.0.49（2600）: [https://dldir1.qq.com/weixin/android/weixin8049android2600_0x2800313d_arm64.apk](https://dldir1.qq.com/weixin/android/weixin8049android2600_0x2800313d_arm64.apk)    
 SHA1: 6F2B100D9A14833E371651017E154147C21BC6B9

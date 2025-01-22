@@ -8,7 +8,7 @@ class FakeMessageUtil {
 
     companion object {
         @JvmStatic
-        fun checkExitFakeId(lst: List<FakeMessageItemBean>, msgId: String): Boolean {
+        fun checkExitMsgId(lst: List<FakeMessageItemBean>, msgId: String): Boolean {
             return lst.indexOfFirst { it.msgId == msgId } > -1
         }
 

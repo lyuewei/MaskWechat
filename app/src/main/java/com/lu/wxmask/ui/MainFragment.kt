@@ -1,12 +1,15 @@
 package com.lu.wxmask.ui
 
+import android.app.Activity
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import com.lu.magic.ui.BaseFragment
 import com.lu.magic.ui.LifecycleAutoViewBinding
 import com.lu.magic.util.SizeUtil
@@ -27,6 +30,7 @@ import com.lu.wxmask.adapter.CommonListAdapter
 import com.lu.wxmask.config.AppConfigUtil
 import com.lu.wxmask.databinding.FragmentMainBinding
 import com.lu.wxmask.databinding.ItemIconTextBinding
+import com.lu.wxmask.plugin.ui.MaskManagerCenterUI
 import com.lu.wxmask.route.MaskAppRouter
 
 
@@ -38,12 +42,19 @@ class MainFragment : BaseFragment() {
     private val donateCardId = 10086
 
     private var mListAdapter: CommonListAdapter<Int, ItemBindingViewHolder>? = null
-
+    private lateinit var context:Context
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return FragmentMainBinding.inflate(inflater, container, false).let {
             mainBinding = it
             it.root
         }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+            this.context=context
+
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -53,7 +64,7 @@ class MainFragment : BaseFragment() {
 
         mListAdapter = object : CommonListAdapter<Int, ItemBindingViewHolder>() {
             init {
-                setData(arrayListOf(1, 2, 3))
+                setData(arrayListOf(1, 2, 3, 4))
             }
 
 
@@ -69,6 +80,7 @@ class MainFragment : BaseFragment() {
                                 1 -> clickModuleCard()
                                 2 -> jumpWxManagerConfigUI(Constrant.VALUE_INTENT_PLUGIN_MODE_ADD)
                                 3 -> jumpWxManagerConfigUI(Constrant.VALUE_INTENT_PLUGIN_MODE_MANAGER)
+                                4 -> showConfigUi()
                                 donateCardId -> MaskAppRouter.routeDonateFeat(requireActivity())
                             }
                         }
@@ -117,6 +129,12 @@ class MainFragment : BaseFragment() {
 
                     3 -> {
                         vh.binding.ivItemIcon.setImageResource(R.drawable.ic_icon_manager)
+                        vh.binding.tvItemTitle.setText(R.string.config_manager)
+                        vh.binding.tvItemTitleSub.setText(R.string.click_here_to_manager)
+                    }
+
+                    4-> {
+                        vh.binding.ivItemIcon.setImageResource(R.drawable.ic_icon_dollar)
                         vh.binding.tvItemTitle.setText(R.string.config_manager)
                         vh.binding.tvItemTitleSub.setText(R.string.click_here_to_manager)
                     }
@@ -227,4 +245,12 @@ class MainFragment : BaseFragment() {
         }
     }
 
+    private fun showConfigUi() {
+        try {
+            MaskManagerCenterUI(context).show()
+        }catch (e: Exception) {
+            ToastUtil.show("配置页面失败")
+            LogUtil.e(e)
+        }
+    }
 }

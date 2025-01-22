@@ -20,6 +20,7 @@ import com.lu.magic.util.ripple.RectangleRippleBuilder
 import com.lu.magic.util.ripple.RippleApplyUtil
 import com.lu.wxmask.adapter.AbsListAdapter
 import com.lu.wxmask.adapter.CommonListAdapter
+import com.lu.wxmask.bean.FakeItemBean
 import com.lu.wxmask.bean.FakeMessageItemBean
 import com.lu.wxmask.plugin.ui.IConfigManagerUI
 import com.lu.wxmask.plugin.ui.Theme
@@ -31,7 +32,7 @@ import com.lu.wxmask.util.ext.dp
 
 
 // PopWindow全屏+返回键监听弹窗，暂不需要，没有那么多配置
-internal class FakeMessageManagerUI(private val context: Activity,private val fakeId:String) : IConfigManagerUI {
+internal class FakeMessageManagerUI(private val context: Activity,private val fakeItem:FakeItemBean) : IConfigManagerUI {
     private lateinit var listAdapter: CommonListAdapter<FakeMessageItemBean, AbsListAdapter.ViewHolder>
     private val popwindow: BottomPopUI
     private lateinit var listView: ListView
@@ -118,11 +119,10 @@ internal class FakeMessageManagerUI(private val context: Activity,private val fa
     }
 
     private fun initListAdapter() {
-        // TODO 加载消息列表
         listAdapter = object : CommonListAdapter<FakeMessageItemBean, AbsListAdapter.ViewHolder>() {
             init {
                 //去重
-                val dataListTemp = ConfigUtil.getFakeMsgList(fakeId).let {
+                val dataListTemp = ConfigUtil.getFakeMsgList(fakeItem.fakeId).let {
                     val keyMap = LinkedHashMap<String, FakeMessageItemBean>()
                     //去重
                     it.forEach { bean ->
@@ -140,12 +140,14 @@ internal class FakeMessageManagerUI(private val context: Activity,private val fa
                         MarginLayoutParams.MATCH_PARENT,
                         MarginLayoutParams.WRAP_CONTENT
                     )
+
                     it.setPadding(6.dp)
                     RippleApplyUtil.apply(it, RectangleRippleBuilder(Color.TRANSPARENT, Theme.Color.bgRippleColor))
                 }
 
                 return object : ViewHolder(itemView) {
                     init {
+
                         itemView.setOnLongClickListener {
                             showDeleteFakeMessageItemDialog(layoutPosition)
                             return@setOnLongClickListener false
@@ -180,7 +182,7 @@ internal class FakeMessageManagerUI(private val context: Activity,private val fa
             .setTitle("是否删除？")
             .setNegativeButton("确定") { _, _ ->
                 listAdapter.removeAt(position)
-                ConfigUtil.setFakeMsgList(fakeId,listAdapter.getData())
+                ConfigUtil.setFakeMsgList(fakeItem.fakeId,listAdapter.getData())
                 listAdapter.notifyDataSetChanged()
             }
             .setNeutralButton("取消") { _, _ ->
@@ -190,7 +192,7 @@ internal class FakeMessageManagerUI(private val context: Activity,private val fa
     }
 
     private fun showAddFakeMessageItemDialog() {
-        AddFakeMessageItemUI(context, listAdapter.getData())
+        AddFakeMessageItemUI(context,fakeItem)
             .setConfirmListener { _, messageItemBean ->
                 listAdapter.addData(messageItemBean)
                 listAdapter.notifyDataSetChanged()

@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         fragmentNavigation = FragmentNavigation(this, binding.mainContainer)
         fragmentNavigation.navigate(MainFragment::class.java)
-        ViewModelProvider(this)[AppUpdateViewModel::class.java].checkOnEnter(this)
+      //  ViewModelProvider(this)[AppUpdateViewModel::class.java].checkOnEnter(this)
 
         handleDeeplinkRoute(intent)
     }

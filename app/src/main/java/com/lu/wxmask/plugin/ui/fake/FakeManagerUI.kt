@@ -14,18 +14,22 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
+import androidx.core.view.allViews
 import androidx.core.view.setPadding
 import com.lu.magic.util.SizeUtil
+import com.lu.magic.util.ToastUtil
 import com.lu.magic.util.ripple.RectangleRippleBuilder
 import com.lu.magic.util.ripple.RippleApplyUtil
+import com.lu.wxmask.Constrant
 import com.lu.wxmask.adapter.AbsListAdapter
 import com.lu.wxmask.adapter.CommonListAdapter
 import com.lu.wxmask.bean.FakeItemBean
+import com.lu.wxmask.bean.FakeMessageItemBean
 import com.lu.wxmask.bean.WxMessageItemBean
-import com.lu.wxmask.plugin.ui.AddMaskItemUI
-import com.lu.wxmask.plugin.ui.EditMaskItemUI
 import com.lu.wxmask.plugin.ui.IConfigManagerUI
 import com.lu.wxmask.plugin.ui.Theme
+import com.lu.wxmask.plugin.ui.fake.message.FakeMessageManagerUI
+import com.lu.wxmask.plugin.ui.fake.message.FakeMessageUtil
 import com.lu.wxmask.plugin.ui.view.BottomPopUI
 import com.lu.wxmask.util.ConfigUtil
 import com.lu.wxmask.util.ext.dp
@@ -38,7 +42,7 @@ internal class FakeManagerUI(private val context: Activity) : IConfigManagerUI {
     private lateinit var listAdapter: CommonListAdapter<FakeItemBean, AbsListAdapter.ViewHolder>
     private val popwindow: BottomPopUI
     private lateinit var listView: ListView
-    public lateinit var copyMsgList :List<WxMessageItemBean>
+
 
     init {
         popwindow = BottomPopUI(onCreateView())
@@ -86,7 +90,7 @@ internal class FakeManagerUI(private val context: Activity) : IConfigManagerUI {
                 }
                 setTextColor(context.getColor(android.R.color.tab_indicator_text))
                 textSize = 16f
-                text = "消息管理"
+                text = "消息配置管理"
             })
             addView(TextView(context).apply {
                 text = "+"
@@ -103,8 +107,8 @@ internal class FakeManagerUI(private val context: Activity) : IConfigManagerUI {
                 this.gravity = Gravity.CENTER
             })
             addView(TextView(context).apply {
-                text = "粘贴"
-                textSize = SizeUtil.sp2px(context.resources, 8f)
+                text = "贴"
+                textSize = SizeUtil.sp2px(context.resources, 6f)
                 setTextColor(context.getColor(android.R.color.tab_indicator_text))
                 setOnClickListener {
                     readCopyMessage()
@@ -112,7 +116,7 @@ internal class FakeManagerUI(private val context: Activity) : IConfigManagerUI {
                 RippleApplyUtil.apply(this, RectangleRippleBuilder(Color.TRANSPARENT, Theme.Color.bgRippleColor, 4))
                 val size = (textSize * 1.5).toInt()
                 layoutParams = FrameLayout.LayoutParams(size, size).apply {
-                    gravity = Gravity.END
+                    gravity = Gravity.START
                 }
                 this.gravity = Gravity.CENTER
             })
@@ -150,40 +154,65 @@ internal class FakeManagerUI(private val context: Activity) : IConfigManagerUI {
             }
 
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-                val itemView = TextView(context).also {
+                val itemView = LinearLayout(context).also {
                     it.layoutParams = MarginLayoutParams(
                         MarginLayoutParams.MATCH_PARENT,
                         MarginLayoutParams.WRAP_CONTENT
+                    )
+                    it.orientation = LinearLayout.HORIZONTAL
+                    it.gravity = Gravity.CENTER_VERTICAL
+                }
+
+                val textView = TextView(context).also {
+                    it.layoutParams = LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        1f
                     )
                     it.setPadding(6.dp)
                     RippleApplyUtil.apply(it, RectangleRippleBuilder(Color.TRANSPARENT, Theme.Color.bgRippleColor))
                 }
 
+                val deleteView = TextView(context).also {
+                    it.layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                    it.text = "删除"
+                    it.setPadding(6.dp)
+                    RippleApplyUtil.apply(it, RectangleRippleBuilder(Color.TRANSPARENT, Theme.Color.bgRippleColor))
+                }
+
+                itemView.addView(textView)
+                itemView.addView(deleteView)
+
                 return object : ViewHolder(itemView) {
                     init {
-                        itemView.setOnLongClickListener {
-                            showDeleteFakeItemDialog(layoutPosition)
+                        itemView.getChildAt(0).setOnLongClickListener {
+                           FakeMessageManagerUI(context,dataList[layoutPosition]).show()
                             return@setOnLongClickListener false
                         }
-                        itemView.setOnClickListener {
+                        itemView.getChildAt(0).setOnClickListener {
                             showEditFakeItemDialog(layoutPosition)
+                        }
+                        itemView.getChildAt(1).setOnClickListener {
+                            showDeleteFakeItemDialog(layoutPosition)
                         }
                     }
                 }
             }
 
             override fun onBindViewHolder(vh: ViewHolder, position: Int, parent: ViewGroup) {
-                val itemView = vh.itemView
+                val itemView = vh.itemView as LinearLayout
+                itemView.allViews
                 val itemModel = dataList[position]
 
-                if (itemView is TextView) {
-                    itemView.text = if (itemModel.fakeName.isEmpty()) {
-                        itemModel.fakeId
-                    } else {
-                        "${itemModel.fakeId} (${itemModel.fakeName})"
-                    }
+                val textView = itemView.getChildAt(0) as TextView
+                textView.text = if (itemModel.fakeName.isEmpty()) {
+                    itemModel.fakeId
+                } else {
+                    "${itemModel.fakeId} (${itemModel.fakeName})"
                 }
-
             }
 
         }
@@ -225,8 +254,42 @@ internal class FakeManagerUI(private val context: Activity) : IConfigManagerUI {
     }
 
     private  fun readCopyMessage(){
-        // TODO 粘贴复制的消息
        val wxMsgList= FakeUtil.getWxMsgList()
+        val userMap: Map<String, List<WxMessageItemBean>> = wxMsgList.groupBy { it.userId }
+        for ((userId, msgList) in userMap) {
+            if (msgList.isNotEmpty()){
+                val fakeList=ConfigUtil.getFakeList()
+                val fakeName = msgList.firstOrNull()?.userName ?: ""
+                //把用户添加到配置中，如果存在就不添加了
+               if( !FakeUtil.checkExitFakeId(fakeList, userId)){
+                   FakeItemBean(userId, fakeName).let {
+                       ConfigUtil.addFakeList(it)
+                   }
+               }
+                //把消息添加到配置中，如果存在就不添加了
+                val fakeMsgList=ConfigUtil.getFakeMsgList(userId)
+                for (msg in msgList) {
+                    if (!FakeMessageUtil.checkExitMsgId(fakeMsgList, msg.msgId)) {
+                        FakeMessageItemBean(
+                            userId,
+                            Constrant.WX_FAKE_TYPE_UPDATE,
+                            msg.msgId,
+                            msg.msgDate,
+                            "",
+                            msg.msgText,
+                            msg.isSend
+                        ).let {
+                            ConfigUtil.addFakeMsgList(userId, it)
+                        }
+                    }
+                }
+
+            }
+
+        }
+        listAdapter.notifyDataSetChanged()
+        FakeUtil.cleanWxMsgList()
+        ToastUtil.show("已配置消息")
     }
 
 
