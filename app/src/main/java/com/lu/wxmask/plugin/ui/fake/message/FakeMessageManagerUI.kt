@@ -130,7 +130,7 @@ internal class FakeMessageManagerUI(private val context: Activity,private val fa
             init {
                 //去重
                 val dataListTemp = ConfigUtil.getFakeMsgList(fakeItem.fakeId).let {
-                    val keyMap = LinkedHashMap<String, FakeMessageItemBean>()
+                    val keyMap = LinkedHashMap<Long, FakeMessageItemBean>()
                     //去重
                     it.forEach { bean ->
                         keyMap[bean.msgId] = bean

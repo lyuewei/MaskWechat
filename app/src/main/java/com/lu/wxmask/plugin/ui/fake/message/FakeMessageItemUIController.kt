@@ -83,7 +83,7 @@ internal class FakeMessageItemUIController(private val context: Context, private
     var tvMsgId = TextView(context).also {
         it.hint = "消息ID"
         if (Constrant.WX_FAKE_TYPE_ADD == message.fakeType){
-            it.text = message.msgId
+            it.text = message.msgId.toString()
         }else {
             it.text = (System.currentTimeMillis()/1000).toString()
         }
@@ -125,7 +125,7 @@ internal class FakeMessageItemUIController(private val context: Context, private
 
     var cbOpen = CheckBox(context).also {
         //it.hint = "是否发送"
-        it.isChecked = message.isSend
+        it.isChecked = message.isOpen
     }
 
 
@@ -138,15 +138,16 @@ internal class FakeMessageItemUIController(private val context: Context, private
             topMargin = 4.dp
         }
         addView(tvFakeId,tvFakeId.hint.toString() )
-        addView(tvMsgText, tvMsgText.hint.toString())
-        addView(tvMsgDate,tvMsgDate.hint.toString() )
-        if (Constrant.WX_FAKE_TYPE_ADD!= message.fakeType) {
+
+        if(Constrant.WX_FAKE_TYPE_ADD!= message.fakeType) {
+            addView(tvMsgText, tvMsgText.hint.toString())
             addView(spinnerFakeType, "伪造类型")
             addView(tvMsgId, tvMsgId.hint.toString())
         }
         if (Constrant.WX_FAKE_TYPE_HIDE!= message.fakeType) {
             addView(etFakeText, etFakeText.hint.toString())
         }
+        addView(tvMsgDate,tvMsgDate.hint.toString() )
         if (Constrant.WX_FAKE_TYPE_ADD== message.fakeType) {
             addView(cbSend,"是否发送")
         }

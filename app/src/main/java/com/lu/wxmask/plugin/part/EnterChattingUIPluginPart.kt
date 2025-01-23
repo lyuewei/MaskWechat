@@ -21,6 +21,8 @@ import com.lu.wxmask.bean.MaskItemBean
 import com.lu.wxmask.bean.QuickTemporaryBean
 import com.lu.wxmask.plugin.WXConfigPlugin
 import com.lu.wxmask.plugin.WXMaskPlugin
+import com.lu.wxmask.plugin.part.fake.FakeMessageConfig_8_0_47
+import com.lu.wxmask.plugin.part.fake.IFakeMessageConfig
 import com.lu.wxmask.util.AppVersionUtil
 import com.lu.wxmask.util.ConfigUtil
 import com.lu.wxmask.util.QuickCountClickListenerUtil
@@ -28,6 +30,7 @@ import com.lu.wxmask.util.ext.getViewId
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import java.lang.reflect.Method
+import java.util.Objects
 
 /**
  * 聊天页页面处理：
@@ -38,7 +41,10 @@ class EnterChattingUIPluginPart() : IPlugin {
         handleChattingUIFragment(context, lpparam)
     }
 
-    private fun handleChattingUIFragment(context: Context, lpparam: XC_LoadPackage.LoadPackageParam) {
+    private fun handleChattingUIFragment(
+        context: Context,
+        lpparam: XC_LoadPackage.LoadPackageParam
+    ) {
         val onEnterBeginMethod = XposedHelpers2.findMethodExactIfExists(
             ClazzN.BaseChattingUIFragment,
             context.classLoader,
@@ -73,9 +79,9 @@ class EnterChattingUIPluginPart() : IPlugin {
             Constrant.WX_CODE_8_0_38 -> "M"
             in Constrant.WX_CODE_8_0_40..Constrant.WX_CODE_8_0_41 -> "K"
             in Constrant.WX_CODE_8_0_41..Constrant.WX_CODE_8_0_42 -> "M"
-            in Constrant.WX_CODE_8_0_44 .. Constrant.WX_CODE_8_0_47 -> "z"
-            Constrant.WX_CODE_PLAY_8_0_48,Constrant.WX_CODE_8_0_49 -> "B"
-            Constrant.WX_CODE_8_0_50             -> "z"
+            in Constrant.WX_CODE_8_0_44..Constrant.WX_CODE_8_0_47 -> "z"
+            Constrant.WX_CODE_PLAY_8_0_48, Constrant.WX_CODE_8_0_49 -> "B"
+            Constrant.WX_CODE_8_0_50 -> "z"
             Constrant.WX_CODE_8_0_51 -> "G"
             Constrant.WX_CODE_8_0_53 -> "F"
             else -> null
@@ -103,7 +109,11 @@ class EnterChattingUIPluginPart() : IPlugin {
             )
             if (!dispatchMethodArray.isNullOrEmpty()) {
                 dispatchMethod = dispatchMethodArray[0]
-                LogUtil.w(AppVersionUtil.getSmartVersionName(), "guess dispatchMethod method： ", dispatchMethod)
+                LogUtil.w(
+                    AppVersionUtil.getSmartVersionName(),
+                    "guess dispatchMethod method： ",
+                    dispatchMethod
+                )
             }
 
         }
@@ -166,10 +176,11 @@ class EnterChattingHookAction(
             //命中配置的微信号
             if (chatUser != null && WXMaskPlugin.containChatUser(chatUser)) {
                 hideChatListUI(fragmentObj, activity, chatUser)
-            }else if (mOptionData.enableFakeMsg && chatUser != null && WXMaskPlugin.containFakeChatUser(chatUser)){
-                fakeMessage(fragmentObj,activity,chatUser)
-            }else {
+            }   else {
                 showChatListUI(fragmentObj)
+            }
+            if ( mOptionData.enableFakeMsg&&chatUser != null && WXMaskPlugin.containFakeChatUser(chatUser)) {
+                fakeMessage(fragmentObj, activity, chatUser)
             }
         } else {
             LogUtil.w("chattingUI's arguments is null")
@@ -177,9 +188,69 @@ class EnterChattingHookAction(
     }
 
     /**fake 消息*/
-    private fun fakeMessage(fragmentObj: Any,  activity: Activity,chatUser: String) {
+    private fun fakeMessage(fragmentObj: Any, activity: Activity, chatUser: String) {
         // TODO
-        val fakeMsgList = WXMaskPlugin.getFakeMsgListByFakeId(chatUser)
+        LogUtil.w("fakeMessage")
+        val fakeMessageConfig: FakeMessageConfig_8_0_47? = when (AppVersionUtil.getVersionCode()) {
+            Constrant.WX_CODE_8_0_47 -> {
+                FakeMessageConfig_8_0_47()
+            }
+            else -> null
+        }
+        if (fakeMessageConfig == null) {
+            LogUtil.w("fakeMessage config is null")
+
+            return
+        }
+        try {
+            //TODO 修改、隐藏
+            //添加 hook com.tencent.mm.ui.chatting.adapter.i0.j 方法
+
+            val msgAdapterDataChangeMethod = XposedHelpers2.findMethodExactIfExists(
+                fakeMessageConfig.msgAdapterClass(),
+                context.classLoader,
+                fakeMessageConfig.msgAdapterDataChangeMethod(),
+                Object::class.java
+            )
+            val msgClass =
+                XposedHelpers2.findClassIfExists(fakeMessageConfig.msgClass(), context.classLoader)
+
+               if (msgAdapterDataChangeMethod != null && msgClass != null) {
+                LogUtil.w("Hook fakeMessage start")
+                XposedHelpers2.hookMethod(msgAdapterDataChangeMethod, object : XC_MethodHook() {
+                    val addMsgList = WXMaskPlugin.getFakeMsgListByFakeId(chatUser).filter { it.fakeType == Constrant.WX_FAKE_TYPE_ADD }
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        LogUtil.w("fakeMessage fakeList size: ${addMsgList.size}")
+                        if (addMsgList.isEmpty()) {
+                            LogUtil.w("fakeMessageList is empty")
+                        }else{
+                            LogUtil.w("Hook fakeMessage msgAdapterDataChangeMethod")
+                            val msgList = XposedHelpers2.callMethod<ArrayList<Any>>(
+                                param.thisObject,
+                                fakeMessageConfig.msgAdapterDataListMethod()
+                            )
+                            val msgIdList = msgList.map { XposedHelpers2.callMethod<Long>(it,"getMsgId")}
+                            for (fakeMsg in addMsgList) {
+                                if (msgIdList.contains(fakeMsg.msgId)) {
+                                    LogUtil.w(" fakeMessage already exists ${fakeMsg.fakeText}")
+                                    continue
+                                }
+                                LogUtil.w(" fakeMessage addFakeMsgList ${fakeMsg.fakeText}")
+                                val msg = fakeMessageConfig.foundFakeMessage(msgClass, fakeMsg)
+                                val insertIndex = msgList.size-1
+                              //if (insertIndex >= 0 && insertIndex <= msgList.size) {
+                                    msgList.add(insertIndex, msg)
+                              //  } else {
+                                   // LogUtil.e("Invalid insert index: $insertIndex, Size: ${msgList.size}")
+                               // }
+                            }
+                        }
+                    }
+                })
+            }
+        } catch (e: Exception) {
+            LogUtil.e("fakeMessage error", e)
+        }
     }
 
     /**hook 文本消息*/
@@ -216,7 +287,10 @@ class EnterChattingHookAction(
                     null
                 } else {
                     val mmListViewField =
-                        XposedHelpers2.findFirstFieldByExactType(fragmentObj.javaClass, MMListViewClazz)
+                        XposedHelpers2.findFirstFieldByExactType(
+                            fragmentObj.javaClass,
+                            MMListViewClazz
+                        )
                     val mmListView = mmListViewField.get(fragmentObj)
                     mmListView as View
 //                    XposedHelpers2.callMethod(mmListView, "getListView") as View
@@ -262,7 +336,11 @@ class EnterChattingHookAction(
             chatListView.visibility = View.INVISIBLE
 
             val quick = QuickTemporaryBean(ConfigUtil.getTemporaryJson() ?: JsonObject())
-            QuickCountClickListenerUtil.register(chatListView.parent as? View?, quick.clickCount, quick.duration) {
+            QuickCountClickListenerUtil.register(
+                chatListView.parent as? View?,
+                quick.clickCount,
+                quick.duration
+            ) {
                 chatListView.visibility = View.VISIBLE
             }
             LogUtil.i("hide chatListView by setVisible")

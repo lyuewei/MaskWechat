@@ -42,7 +42,7 @@ private constructor(
 		        travelTime = json.optLong("travelTime", 0L),
                 enableTravelTime = json.optBoolean("enableTravelTime", false),
                 enableCopyTextInfo = json.optBoolean("enableCopyTextInfo",false),
-                enableFakeMsg = json.optBoolean("enableCopyTextInfo",false)
+                enableFakeMsg = json.optBoolean("enableFakeMsg",false)
             )
         }
         fun toJson(data: OptionData): String {

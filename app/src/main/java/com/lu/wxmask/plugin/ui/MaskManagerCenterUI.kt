@@ -345,7 +345,7 @@ class MaskManagerCenterUI @JvmOverloads constructor(
                     layoutParams = FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
                         gravity = Gravity.CENTER_VERTICAL or Gravity.RIGHT
                     }
-                    isChecked = mOptionData.enableCopyTextInfo
+                    isChecked = mOptionData.enableFakeMsg
                     setOnCheckedChangeListener { buttonView, isChecked ->
                         mOptionData.enableFakeMsg = isChecked
                     }

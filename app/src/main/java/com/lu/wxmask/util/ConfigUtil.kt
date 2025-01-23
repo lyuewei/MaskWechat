@@ -171,7 +171,7 @@ class ConfigUtil {
                     if (json.isNullOrBlank()) {
                         continue
                     }
-                    var bean = FakeMessageItemBean.fromJson(json)
+                    val bean = FakeMessageItemBean.fromJson(json)
                     if (TextUtils.isEmpty(bean.fakeId)) {
                         continue
                     }
@@ -190,7 +190,7 @@ class ConfigUtil {
             GsonUtil.toJson(data).let {
                 sp.edit().putString(KEY_FAKE_MSG_LIST+wxid, it).apply()
             }
-//            notifyConfigSetObserverChanged()
+           notifyConfigSetObserverChanged()
         }
 
         /**
@@ -207,7 +207,7 @@ class ConfigUtil {
             GsonUtil.toJson(msgList).let {
                 sp.edit().putString(KEY_FAKE_MSG_LIST+wxid, it).apply()
             }
-//            notifyConfigSetObserverChanged()
+            notifyConfigSetObserverChanged()
         }
 
 

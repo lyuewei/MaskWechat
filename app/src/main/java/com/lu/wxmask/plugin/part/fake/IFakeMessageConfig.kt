@@ -8,6 +8,6 @@ interface IFakeMessageConfig {
     fun msgAdapterClass(): String
     fun msgAdapterDataListMethod(): String
     fun msgAdapterDataChangeMethod(): String
-    fun addFakeMessage(fakeMessageItemBean: FakeMessageItemBean):Any?
+    fun foundFakeMessage(fclazz: Class<*>,akeMessageItemBean: FakeMessageItemBean):Any?
     fun readMsgToFaskMsg(msg: Any): FakeMessageItemBean?
 }

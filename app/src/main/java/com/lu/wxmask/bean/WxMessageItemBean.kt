@@ -13,7 +13,7 @@ import java.util.Date
 class WxMessageItemBean(
     val userId: String,
     val userName: String?,
-    val msgId: String,
+    val msgId: Long,
     val msgDate: Long,
     val msgText: String,
     val isSend: Boolean ,

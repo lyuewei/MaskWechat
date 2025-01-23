@@ -237,7 +237,7 @@ internal class FakeManagerUI(private val context: Activity) : IConfigManagerUI {
     }
 
     private fun showAddFakeItemDialog() {
-        AddFakeItemUI(context, listAdapter.getData())
+        AddFakeItemUI(context)
             .setConfirmListener { _, fakeItemBean ->
                 listAdapter.addData(fakeItemBean)
                 listAdapter.notifyDataSetChanged()

@@ -59,13 +59,14 @@ class AddFakeMessageItemUI(
                     val msgDate = ui.msgDate
                     val fakeText = ui.etFakeText.text.toElseEmptyString()
                     val isSend = ui.cbSend.isChecked
-
+                    val isOpen=ui.cbOpen.isChecked
                     FakeMessageItemBean(fakeId).let {
                         it.isSend=isSend
                         it.fakeText=fakeText
                         it.fakeType=Constrant.WX_FAKE_TYPE_ADD
-                        it.msgId=(System.currentTimeMillis()/1000).toString()
+                        it.msgId=(System.currentTimeMillis()/1000)
                         it.msgDate=msgDate
+                        it.isOpen = isOpen
                         ConfigUtil.addFakeMsgList(fakeId,it)
                         configListener?.invoke(dialog, it)
                     }

@@ -13,14 +13,14 @@ import java.util.Date
 class FakeMessageItemBean(
     val fakeId: String,
     var fakeType: Int?,
-    var msgId: String,
+    var msgId: Long,
     var msgDate: Long?,
     var fakeText: String?,
     var msgText: String?,
     var isSend: Boolean =false,
     var isOpen:Boolean=true
 ) {
-    constructor(fakeId: String):this(fakeId,Constrant.WX_FAKE_TYPE_ADD,(System.currentTimeMillis()/1000).toString(),System.currentTimeMillis(),"","",false,true)
+    constructor(fakeId: String):this(fakeId,Constrant.WX_FAKE_TYPE_ADD,(System.currentTimeMillis()/1000),System.currentTimeMillis(),"","",false,true)
     companion object {
         fun fromJson(jsonText: String): FakeMessageItemBean {
             val json = try {
@@ -29,7 +29,7 @@ class FakeMessageItemBean(
                 JSONObject()
             }
             return FakeMessageItemBean(
-                msgId = json.optString("msgId", ""),
+                msgId = json.optLong("msgId", 0),
                 fakeId = json.optString("fakeId", ""),
                 msgDate = json.optLong("msgDate", System.currentTimeMillis()),
                 fakeType = json.optInt("fakeType", Constrant.WX_FAKE_TYPE_ADD),

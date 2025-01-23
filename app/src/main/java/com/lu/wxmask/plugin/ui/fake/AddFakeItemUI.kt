@@ -10,7 +10,6 @@ import com.lu.wxmask.util.ConfigUtil
 
 class AddFakeItemUI(
     private val context: Context,
-    private val lst: List<FakeItemBean>,
 ) {
     private var onDismissListener: DialogInterface.OnDismissListener? = null
     private var configListener: ((DialogInterface, FakeItemBean) -> Unit)? = null
@@ -18,32 +17,9 @@ class AddFakeItemUI(
     private var fakeId = ""
     private var fakeName = ""
 
-    //空闲的按钮的文字
-    private var freeButtonText: CharSequence? = null
-
-    fun setFakeId(fakeId: String?): AddFakeItemUI {
-        this.fakeId = fakeId?:""
-        return this
-    }
-
-    fun setFakeName(fakeName: String?): AddFakeItemUI {
-        this.fakeName = fakeName?:""
-        return this
-    }
 
     fun setConfirmListener(listener: (DialogInterface, FakeItemBean) -> Unit): AddFakeItemUI {
         this.configListener = listener
-        return this
-    }
-
-    fun setOnDismissListener(listener: DialogInterface.OnDismissListener): AddFakeItemUI {
-        onDismissListener = listener
-        return this
-    }
-
-    fun setFreeButton(text: CharSequence, listener: DialogInterface.OnClickListener?): AddFakeItemUI {
-        freeButtonText = text
-        onFreeButtonListener = listener
         return this
     }
 
@@ -56,8 +32,7 @@ class AddFakeItemUI(
             .setView(ui.root)
             .setNegativeButton("关闭", null)
             .setPositiveButton("确定", null)
-            .setNeutralButton(freeButtonText, onFreeButtonListener)
-            .setOnDismissListener(onDismissListener)
+           // .setOnDismissListener(onDismissListener)
             .show()
             .also { dialog ->
                 //重写确定按钮监听，不消失对话框
